@@ -58,6 +58,9 @@ The test is built on the **company production stack** to demonstrate fit.
 - Simplicity first: minimum code that solves the problem, no speculative abstractions
 - Surgical changes: touch only what the task requires
 - Never commit secrets: `.env`, Stripe keys
+- Incremental setup: add a dependency or env variable only when the feature that uses it
+  is implemented — never install packages or define env vars ahead of time. `.env.example`
+  grows one variable at a time, in lockstep with the code that reads it.
 - Include `.env.example` with placeholder test keys
 - Provide an example CSV (`example.csv`) matching the exact columns:
   `name,email,debtSubject,debtAmount`
@@ -66,8 +69,9 @@ The test is built on the **company production stack** to demonstrate fit.
 
 1. `bun install`
 2. Start the local PostgreSQL instance: `docker compose up -d`
-3. Copy `.env.example` to `.env` and set Stripe test keys (`sk_test_...`, `pk_test_...`)
-   and the `DATABASE_URL`
+3. Copy `.env.example` to `.env` — variables are added incrementally: `DATABASE_URL` is
+   required from the DB step onward; Stripe test keys (`sk_test_...`, `pk_test_...`) only
+   when Task 3 lands
 4. Run migrations: `bunx prisma migrate dev`
 5. `bun run import` (or equivalent) to load `example.csv` into the DB
 6. `bun run dev` to start the server
