@@ -59,9 +59,10 @@ The test is built on the **company production stack** to demonstrate fit.
 - Simplicity first: minimum code that solves the problem, no speculative abstractions
 - Surgical changes: touch only what the task requires
 - Never commit secrets: `.env`, Stripe keys
-- Incremental setup: add a dependency or env variable only when the feature that uses it
-  is implemented — never install packages or define env vars ahead of time. `.env.example`
-  grows one variable at a time, in lockstep with the code that reads it.
+- Incremental setup: add a dependency, env variable, or DB schema field only when the
+  feature that uses it is implemented — never install packages, define env vars, or add
+  schema fields ahead of time. `.env.example` grows one variable at a time, in lockstep
+  with the code that reads it; Prisma migrations grow the schema the same way.
 - Include `.env.example` with placeholder test keys
 - Provide an example CSV (`example.csv`) matching the exact columns:
   `name,email,debtSubject,debtAmount`
