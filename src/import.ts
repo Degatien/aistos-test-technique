@@ -5,6 +5,8 @@ import { parseDebtorsCsv } from "./import/parse";
 
 const CSV_PATH = process.argv[2] ?? "debtors.csv";
 
+// Usage: bun run import [path-to-csv]  (defaults to ./debtors.csv)
+
 async function main() {
   const rows = parseDebtorsCsv(CSV_PATH);
   console.log(`Parsed ${rows.length} rows from ${CSV_PATH}`);

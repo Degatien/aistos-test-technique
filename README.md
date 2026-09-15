@@ -30,7 +30,8 @@ cp .env.example .env
 bunx prisma migrate dev
 
 # 5. Importer le CSV de débiteurs
-bun run import
+bun run import            # utilise debtors.csv par défaut
+bun run import mon-fichier.csv   # ou spécifier un chemin explicite
 
 # 6. Démarrer le serveur
 bun run dev
