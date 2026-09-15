@@ -7,6 +7,10 @@ function getSlugFromPath(): string {
   return parts[parts.length - 1] ?? "";
 }
 
+function getPaymentParam(): string | null {
+  return new URLSearchParams(window.location.search).get("payment");
+}
+
 async function pay(debtId: string) {
   const res = await fetch("/api/checkout", {
     method: "POST",
@@ -26,6 +30,7 @@ async function pay(debtId: string) {
 
 export function App() {
   const slug = getSlugFromPath();
+  const payment = getPaymentParam();
   const { data, isLoading, error } = trpc.debtor.getBySlug.useQuery({ slug });
 
   if (isLoading) {
@@ -43,6 +48,17 @@ export function App() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-6 text-foreground">
       <div className="w-full max-w-lg space-y-6">
+        {payment === "success" && (
+          <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+            Merci ! Votre paiement a bien été pris en compte.
+          </div>
+        )}
+        {payment === "cancelled" && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            Paiement annulé. Vous pouvez réessayer quand vous voulez.
+          </div>
+        )}
+
         <div className="space-y-1">
           <h1 className="text-2xl font-bold">{data.name}</h1>
           <p className="text-muted-foreground">{data.email}</p>
@@ -65,7 +81,7 @@ export function App() {
                   disabled={debt.status === "PAID"}
                   onClick={() => pay(debt.id)}
                 >
-                  Payer
+                  {debt.status === "PAID" ? "Payée" : "Payer"}
                 </Button>
               </CardContent>
             </Card>

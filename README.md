@@ -37,6 +37,21 @@ bun run import mon-fichier.csv   # ou spécifier un chemin explicite
 bun run dev
 ```
 
+### Tester le paiement Stripe (mode test)
+
+Avec le serveur lancé, ouvrir un terminal pour relayer les webhooks Stripe :
+
+```bash
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+```
+
+Puis :
+
+1. Ouvrir `/debtor/:slug` (voir un slug avec `bunx prisma studio` ou en base)
+2. Cliquer **Payer** → redirection vers Stripe Checkout (mode test)
+3. Payer avec la carte de test `4242 4242 4242 4242` (expiration/CVC au choix)
+4. Le webhook reçu met à jour la dette : statut **PAID** et `paidAt` renseigné
+
 ### Tester
 
 - `/health` → `{"status":"ok"}` (sanity check du serveur)
@@ -92,6 +107,9 @@ l'adéquation.
   en revanche, relancer `bun run import` **ajoute de nouvelles dettes** (chaque ligne du
   CSV crée une `Debt`). Pour un import réel, il faudrait une déduplication par ligne
   (cf. « Avant une mise en production »).
+- Le statut de la dette est mis à jour par le **webhook Stripe** (`checkout.session.completed`).
+  Si le webhook est retardé, la page peut afficher « En attente » jusqu'au prochain
+  rechargement — c'est le comportement attendu (le webhook est la source de vérité).
 - Les montants très élevés (ligne humoristique `999999999`) sont payables en mode test
   uniquement selon les limites Stripe.
 
