@@ -5,6 +5,7 @@ import { prisma } from "./db";
 import { stripe } from "./stripe";
 import { parseDebtorsCsvContent } from "../import/parse";
 import { importRows } from "../import/service";
+import { listPendingDebtors, sendReminder } from "./reminders";
 import index from "../../index.html";
 
 const app = new Hono();
@@ -83,6 +84,30 @@ app.post("/api/import", async (c) => {
       400,
     );
   }
+});
+
+app.get("/api/reminders", async (c) => {
+  const debtors = await listPendingDebtors();
+  return c.json({ debtors });
+});
+
+app.post("/api/reminders/send", async (c) => {
+  const { debtorIds } = await c.req.json<{ debtorIds?: string[] }>();
+
+  const pending = await listPendingDebtors();
+  const targets = debtorIds && debtorIds.length > 0
+    ? pending.filter((d) => debtorIds.includes(d.id))
+    : pending;
+
+  if (targets.length === 0) {
+    return c.json({ error: "No debtor with pending debts" }, 400);
+  }
+
+  for (const debtor of targets) {
+    await sendReminder(debtor);
+  }
+
+  return c.json({ sent: targets.length });
 });
 
 app.post("/api/stripe/webhook", async (c) => {
