@@ -27,6 +27,9 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .cache
 *.tsbuildinfo
 
+# generated
+src/client/styles.css
+
 # IntelliJ based IDEs
 .idea
 
