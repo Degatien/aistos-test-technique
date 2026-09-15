@@ -18,7 +18,8 @@
     "csv-parse": "^7.0.2",
     "dotenv": "^17.4.2",
     "hono": "^4.13.8",
-    "pg": "^8.23.0"
+    "pg": "^8.23.0",
+    "zod": "^4.6.5"
   },
   "scripts": {
     "dev": "bun --watch src/server/index.ts",
