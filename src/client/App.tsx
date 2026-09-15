@@ -7,6 +7,23 @@ function getSlugFromPath(): string {
   return parts[parts.length - 1] ?? "";
 }
 
+async function pay(debtId: string) {
+  const res = await fetch("/api/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ debtId }),
+  });
+
+  const data = (await res.json()) as { url?: string; error?: string };
+
+  if (!res.ok || !data.url) {
+    alert(data.error ?? "Une erreur est survenue.");
+    return;
+  }
+
+  window.location.href = data.url;
+}
+
 export function App() {
   const slug = getSlugFromPath();
   const { data, isLoading, error } = trpc.debtor.getBySlug.useQuery({ slug });
@@ -44,7 +61,12 @@ export function App() {
                     Statut : {debt.status === "PAID" ? "Payée" : "En attente"}
                   </p>
                 </div>
-                <Button disabled={debt.status === "PAID"}>Payer</Button>
+                <Button
+                  disabled={debt.status === "PAID"}
+                  onClick={() => pay(debt.id)}
+                >
+                  Payer
+                </Button>
               </CardContent>
             </Card>
           ))}
