@@ -36,6 +36,7 @@ The test is built on the **company production stack** to demonstrate fit.
 | CSV parsing | `csv-parse` | Handles quoted fields correctly |
 | Stripe | Checkout Session, test mode | Status updated via webhook + redirect fallback |
 | Frontend | React + TanStack + TailwindCSS + Shadcn/ui | Company standard |
+| Bundling | Bun (HTML imports) | No Vite — Bun bundles React/CSS natively |
 | Currency | EUR | Assumed from context; verify against CSV |
 
 ### Hypotheses

@@ -1,0 +1,12 @@
+{
+  "name": "aistos-test-technique",
+  "module": "src/server/index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
