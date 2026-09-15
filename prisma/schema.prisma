@@ -21,7 +21,7 @@ model Debt {
   debtorId    String
   debtor      Debtor   @relation(fields: [debtorId], references: [emailHash], onDelete: Cascade)
   debtSubject String
-  debtAmount  Int // cents (EUR)
+  debtAmount  Int // euros as in the CSV; converted to cents only for Stripe
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

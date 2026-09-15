@@ -38,7 +38,7 @@ The test is built on the **company production stack** to demonstrate fit.
 | Stripe | Checkout Session, test mode | Status updated via webhook + redirect fallback |
 | Frontend | React + TanStack + TailwindCSS + Shadcn/ui | Company standard |
 | Bundling | Bun (HTML imports) | No Vite — Bun bundles React/CSS natively |
-| Currency | EUR | Assumed from context; verify against CSV |
+| Currency | EUR | Amounts stored as whole euros (`Int`) as in the CSV; converted to cents only for Stripe |
 
 ### Hypotheses
 
@@ -47,13 +47,17 @@ The test is built on the **company production stack** to demonstrate fit.
 - `name` and `email` are **encrypted at rest** (AES-256-GCM) with a key from `.env`;
   `emailHash` (HMAC-SHA256 of the email) is the `Debtor` primary key to allow
   set-based upserts during CSV import.
+- `debtAmount` in the CSV is a whole number of **euros** (verified against the provided
+  `debtors.csv`); stored as `Int`, converted to cents (`* 100`) when building Stripe
+  sessions.
 - Stripe test keys come from a `.env` file (never committed).
 - Local PostgreSQL runs via `docker compose up`; migrations via Prisma.
 
 ### Infrastructure (prod context, for README "Avant une mise en production")
 
 - Scaleway (deployment), Docker, GitHub Actions (CI/CD), Axiom (monitoring/logs).
-- AI tooling used on this project: Claude Code, Lovable, Gemini API (for README "Ressources utilisées").
+- AI tooling used on this project: **Opencode** (powered by Deepseek) — for README
+  "Ressources utilisées".
 
 ## Conventions
 
@@ -68,8 +72,8 @@ The test is built on the **company production stack** to demonstrate fit.
   schema fields ahead of time. `.env.example` grows one variable at a time, in lockstep
   with the code that reads it; Prisma migrations grow the schema the same way.
 - Include `.env.example` with placeholder test keys
-- Provide an example CSV (`example.csv`) matching the exact columns:
-  `name,email,debtSubject,debtAmount`
+- Provide the example CSV (`debtors.csv`) matching the exact columns:
+  `name,email,debtSubject,debtAmount` (blank lines and quoted fields must be handled)
 
 ## Getting Started (for agents)
 
@@ -79,9 +83,9 @@ The test is built on the **company production stack** to demonstrate fit.
    required from the DB step onward; Stripe test keys (`sk_test_...`, `pk_test_...`) only
    when Task 3 lands
 4. Run migrations: `bunx prisma migrate dev`
-5. `bun run import` (or equivalent) to load `example.csv` into the DB
+5. `bun run import` (or equivalent) to load `debtors.csv` into the DB
 6. `bun run dev` to start the server
-7. Open `/debtor/:email` to see the debtor page and test the Pay button
+7. Open `/debtor/:slug` to see the debtor page and test the Pay button
 
 ## Goal-Driven Execution
 
