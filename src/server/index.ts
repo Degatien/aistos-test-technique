@@ -155,6 +155,7 @@ export default {
   routes: {
     "/debtor/*": index,
     "/import": index,
+    "/reminders": index,
   },
   fetch: app.fetch,
   development: true,

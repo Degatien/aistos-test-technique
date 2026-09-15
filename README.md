@@ -19,7 +19,7 @@ paiement via **Stripe en mode test**.
 # 1. Installer les dépendances
 bun install
 
-# 2. Démarrer PostgreSQL (docker compose)
+# 2. Démarrer PostgreSQL + Mailpit (docker compose)
 docker compose up -d
 
 # 3. Copier la configuration d'environnement
@@ -57,6 +57,9 @@ Puis :
 - `/health` → `{"status":"ok"}` (sanity check du serveur)
 - `/debtor/:slug` → page débiteur (identité, intitulé, montant, statut, bouton **Payer**)
 - Payer → redirection Stripe Checkout (mode test) → statut de la dette mis à jour
+- `/import` → page d'import CSV (upload de fichier au lieu du CLI)
+- `/reminders` → liste des débiteurs avec dettes en attente + envoi d'email de relance
+  via **Mailpit** (interface web : http://localhost:8025)
 
 ---
 
@@ -76,6 +79,7 @@ l'adéquation.
 | Protection des données | AES-256-GCM + HMAC-SHA256 | `name`/`email` chiffrés au repos |
 | Parsing CSV | `csv-parse` | Gère correctement champs quotés et lignes vides |
 | Stripe | Checkout Session, mode test | Statut mis à jour via webhook + fallback redirect |
+| Emails | Mailpit (mode test) | Envoi de relances via API HTTP Mailpit (`MAILPIT_URL`), UI sur `:8025` |
 | Frontend | React + TanStack + TailwindCSS + Shadcn/ui | Standard entreprise |
 | Bundling | Bun (HTML imports) | Pas de Vite — Bun bundle React/CSS nativement |
 | Devise | EUR | Montants stockés en euros entiers (`Int`), convertis en cents pour Stripe |
