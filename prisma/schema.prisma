@@ -6,10 +6,20 @@ datasource db {
   provider = "postgresql"
 }
 
+model Debtor {
+  emailHash String   @id // HMAC-SHA256(email) — deterministic PK for set-based upsert
+  slug      String   @unique
+  name      String
+  email     String
+  debts     Debt[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Debt {
   id          String   @id @default(cuid())
-  name        String
-  email       String   @unique
+  debtorId    String
+  debtor      Debtor   @relation(fields: [debtorId], references: [emailHash], onDelete: Cascade)
   debtSubject String
   debtAmount  Int // cents (EUR)
   createdAt   DateTime @default(now())

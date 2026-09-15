@@ -33,6 +33,7 @@ The test is built on the **company production stack** to demonstrate fit.
 | Runtime | Bun | Company production runtime |
 | API | REST & tRPC | Company standard |
 | Database | PostgreSQL + Prisma | Company standard; local instance via Docker |
+| Data protection | AES-256-GCM encryption + HMAC-SHA256 | `name`/`email` encrypted at rest; `emailHash` (HMAC) as `Debtor` PK for upserts |
 | CSV parsing | `csv-parse` | Handles quoted fields correctly |
 | Stripe | Checkout Session, test mode | Status updated via webhook + redirect fallback |
 | Frontend | React + TanStack + TailwindCSS + Shadcn/ui | Company standard |
@@ -41,8 +42,11 @@ The test is built on the **company production stack** to demonstrate fit.
 
 ### Hypotheses
 
-- A debtor is identified by **email** in the URL (`/debtor/:email`).
-- One debt per debtor (or the page lists all debts for that email).
+- A debtor is identified by an opaque **slug** in the URL (`/debtor/:slug`).
+- One debtor per email; a debtor can have **multiple debts**.
+- `name` and `email` are **encrypted at rest** (AES-256-GCM) with a key from `.env`;
+  `emailHash` (HMAC-SHA256 of the email) is the `Debtor` primary key to allow
+  set-based upserts during CSV import.
 - Stripe test keys come from a `.env` file (never committed).
 - Local PostgreSQL runs via `docker compose up`; migrations via Prisma.
 
