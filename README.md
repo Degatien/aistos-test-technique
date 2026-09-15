@@ -87,6 +87,10 @@ l'adéquation.
 ### Limites
 
 - Le `slug` est généré aléatoirement à l'import et reste stable sur ré-import (upsert).
+- L'import est **idempotent côté débiteur** (upsert par `emailHash`, pas de doublons) ;
+  en revanche, relancer `bun run import` **ajoute de nouvelles dettes** (chaque ligne du
+  CSV crée une `Debt`). Pour un import réel, il faudrait une déduplication par ligne
+  (cf. « Avant une mise en production »).
 - Les montants très élevés (ligne humoristique `999999999`) sont payables en mode test
   uniquement selon les limites Stripe.
 

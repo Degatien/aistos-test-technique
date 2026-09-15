@@ -90,6 +90,7 @@ The test is built on the **company production stack** to demonstrate fit.
 ## Goal-Driven Execution
 
 - Task 1 → verify: rows exist in the DB after import; import is idempotent or documented
+  (debtor upserts are idempotent; re-running appends new Debt rows — documented behavior)
 - Task 2 → verify: page shows name, subject, amount, status and a working Payer button
 - Task 3 → verify: clicking Payer opens Stripe Checkout (test mode); paying updates the
   debt status to paid; webhook path tested (e.g. with `stripe listen`)
