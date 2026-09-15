@@ -24,6 +24,7 @@ model Debt {
   debtAmount      Int // euros as in the CSV; converted to cents only for Stripe
   status          DebtStatus @default(PENDING)
   stripeSessionId String?
+  paidAt          DateTime?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 }

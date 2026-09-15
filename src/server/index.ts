@@ -68,6 +68,44 @@ app.post("/api/checkout", async (c) => {
   return c.json({ url: session.url });
 });
 
+app.post("/api/stripe/webhook", async (c) => {
+  const signature = c.req.header("stripe-signature");
+  const body = await c.req.text();
+
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!secret) {
+    return c.json({ error: "STRIPE_WEBHOOK_SECRET is not configured" }, 500);
+  }
+
+  if (!signature) {
+    return c.json({ error: "Missing stripe-signature header" }, 400);
+  }
+
+  let event: Awaited<ReturnType<typeof stripe.webhooks.constructEventAsync>>;
+  try {
+    event = await stripe.webhooks.constructEventAsync(body, signature, secret);
+  } catch {
+    return c.json({ error: "Invalid signature" }, 400);
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+
+    const debtId = session.metadata?.debtId;
+    if (debtId) {
+      await prisma.debt.update({
+        where: { id: debtId },
+        data: {
+          status: "PAID",
+          paidAt: new Date(),
+        },
+      });
+    }
+  }
+
+  return c.json({ received: true });
+});
+
 const port = Number(process.env.PORT ?? 3000);
 
 export default {
