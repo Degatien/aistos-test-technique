@@ -3,6 +3,8 @@ import { trpcServer } from "@hono/trpc-server";
 import { appRouter } from "./routers";
 import { prisma } from "./db";
 import { stripe } from "./stripe";
+import { parseDebtorsCsvContent } from "../import/parse";
+import { importRows } from "../import/service";
 import index from "../../index.html";
 
 const app = new Hono();
@@ -66,6 +68,21 @@ app.post("/api/checkout", async (c) => {
   });
 
   return c.json({ url: session.url });
+});
+
+app.post("/api/import", async (c) => {
+  const raw = await c.req.text();
+
+  try {
+    const rows = parseDebtorsCsvContent(raw);
+    const result = await importRows(rows);
+    return c.json(result);
+  } catch (err) {
+    return c.json(
+      { error: err instanceof Error ? err.message : "Import failed" },
+      400,
+    );
+  }
 });
 
 app.post("/api/stripe/webhook", async (c) => {

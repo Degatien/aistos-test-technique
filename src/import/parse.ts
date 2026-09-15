@@ -8,10 +8,13 @@ export interface DebtorRow {
   debtAmount: number; // whole euros, as in the CSV
 }
 
-/** Parse + validate debtors.csv (columns: name, email, debtSubject, debtAmount). */
+/** Read + parse + validate a CSV file (columns: name, email, debtSubject, debtAmount). */
 export function parseDebtorsCsv(path: string): DebtorRow[] {
-  const raw = readFileSync(path, "utf8");
+  return parseDebtorsCsvContent(readFileSync(path, "utf8"));
+}
 
+/** Parse + validate CSV content (columns: name, email, debtSubject, debtAmount). */
+export function parseDebtorsCsvContent(raw: string): DebtorRow[] {
   const records = parse(raw, {
     columns: true,
     skip_empty_lines: true,
