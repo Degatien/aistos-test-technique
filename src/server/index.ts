@@ -129,6 +129,7 @@ export default {
   port,
   routes: {
     "/debtor/*": index,
+    "/import": index,
   },
   fetch: app.fetch,
   development: true,
